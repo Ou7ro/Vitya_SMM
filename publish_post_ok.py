@@ -6,7 +6,7 @@ def publish_post_ok(app_key: str, ok_token: str, id_channel: str, text: str='', 
     attachment = {
         'media': []
     }
-    if text: 
+    if text:
         attachment['media'].append(
             {
                 "type": "text",
@@ -22,8 +22,8 @@ def publish_post_ok(app_key: str, ok_token: str, id_channel: str, text: str='', 
                 'type': 'photo',
                 "list": tokens
             }
-        )     
-    attachment = json.dumps(attachment)  
+        )
+    attachment = json.dumps(attachment)
     params = {
         'application_key': app_key,
         'attachment': attachment,
@@ -54,22 +54,22 @@ def __get_upload_urls(app_key: str, ok_token: str, id_channel: str, count_img: i
 
 def __upload_imgs(app_key: str, ok_token: str, upload_url: str, urls_img: list) -> dict:
     files = {}
-    
+
     for i, url in enumerate(urls_img):
         response = requests.get(url)
         response.raise_for_status()
-        photo = response.content       
-        files[f'file{i}'] = photo    
-        
+        photo = response.content
+        files[f'file{i}'] = photo
+
     response = requests.post(upload_url, files=files)
     response.raise_for_status()    
-    return response.json()['photos']    
+    return response.json()['photos']
 
 
 def __get_token_img(photos: dict) -> list:
     tokens = []
-    
+
     for key in photos:
-            tokens.append({'id': photos[key]['token']})
-            
+        tokens.append({'id': photos[key]['token']})
+
     return tokens
