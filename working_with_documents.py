@@ -82,19 +82,25 @@ def get_media_from_docs(docs_id) -> dict:
 
 
 def validate_post(post: dict, sheet_url: str) -> bool:
-    fields = [
+    """Проверяет обязательные поля поста и возвращает False при наличии ошибок."""
+    required_fields = [
         'Дата',
         'Время',
         'Ссылка на Google Документ',
         'social_media',
         'id_media',
     ]
-    
-    for field in fields:
-        if not post[field]:
-            status = f'Не указно поле {field}, укажите и измените статус на "Нет"!'
-            change_status_post(sheet_url, post['ID'], status)
-            return False
+
+    errors = []
+
+    for field in required_fields:
+        if not post.get(field):
+            errors.append(f'Не указано поле "{field}"')
+
+    if errors:
+        error_message = 'Обнаружены ошибки:\n- ' + '\n- '.join(errors) + '\n\nИсправьте и измените статус на "Нет"!'
+        change_status_post(sheet_url, post['ID'], error_message)
+        return False
 
     return True
 
@@ -105,7 +111,7 @@ def change_status_post(sheet_url: str, post_id: str, status: str='Да'):
     headers = sheet.worksheet('Лист1').row_values(1)
     column_index = headers.index('Опубликован') + 1
     sheet.sheet1.update_cell(post_id+1, column_index, status)
-    
+
 
 def format_text(text):
     try:
